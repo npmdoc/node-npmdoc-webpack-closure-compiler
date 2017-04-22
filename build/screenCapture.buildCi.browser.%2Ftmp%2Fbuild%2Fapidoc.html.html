@@ -1,0 +1,252 @@
+<html><head></head><body><div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a>webpack-closure-compiler (v2.1.4)</a>
+</h1>
+<h4>Google Closure Compiler plugin for Webpack</h4>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.webpack-closure-compiler">module webpack-closure-compiler</a><ol>
+
+        <li>
+
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">webpack-closure-compiler.</span>runner</span>
+
+        </li>
+
+        <li>
+
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">webpack-closure-compiler.</span>utils</span>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.webpack-closure-compiler.runner">module webpack-closure-compiler.runner</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.webpack-closure-compiler.runner.compile">
+            function <span class="apidocSignatureSpan">webpack-closure-compiler.runner.</span>compile
+            <span class="apidocSignatureSpan">(input, options, callback)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">webpack-closure-compiler.runner.</span>OPTIONS</span>
+
+        </li>
+
+        <li>
+
+            <span class="apidocSignatureSpan">string <span class="apidocSignatureSpan">webpack-closure-compiler.runner.</span>JAR_PATH</span>
+
+        </li>
+
+        <li>
+
+            <span class="apidocSignatureSpan">string <span class="apidocSignatureSpan">webpack-closure-compiler.runner.</span>JAVA_PATH</span>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.webpack-closure-compiler.utils">module webpack-closure-compiler.utils</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.webpack-closure-compiler.utils.snakeToCamel">
+            function <span class="apidocSignatureSpan">webpack-closure-compiler.utils.</span>snakeToCamel
+            <span class="apidocSignatureSpan">(str)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.webpack-closure-compiler" id="apidoc.module.webpack-closure-compiler">module webpack-closure-compiler</a></h1>
+
+
+
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.webpack-closure-compiler.runner" id="apidoc.module.webpack-closure-compiler.runner">module webpack-closure-compiler.runner</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.webpack-closure-compiler.runner.compile" id="apidoc.element.webpack-closure-compiler.runner.compile">
+        function <span class="apidocSignatureSpan">webpack-closure-compiler.runner.</span>compile
+        <span class="apidocSignatureSpan">(input, options, callback)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">compile = function (input, options, callback) {
+  var args, compiler, result, stderr, stdout;
+  if ('function' === typeof options) {
+    callback = options;
+    options = OPTIONS;
+  } else {
+    result = {};
+    Object.keys(OPTIONS).forEach(function(key) {
+      return result[key] = OPTIONS[key];
+    });
+    Object.keys(options).forEach(function(key) {
+      return result[key] = options[key];
+    });
+    options = result;
+  }
+  args = [];
+  if (!options.jar) {
+    options.jar = JAR_PATH;
+  }
+  args.push('-jar');
+  args.push(options.jar);
+  delete options.jar;
+  Object.keys(options).forEach(function(key) {
+    var val, value, _i, _len;
+    value = options[key];
+    if (Array.isArray(value)) {
+      for (_i = 0, _len = value.length; _i &lt; _len; _i++) {
+        val = value[_i];
+        args.push("--" + key);
+        args.push(val);
+      }
+      return;
+    }
+    args.push("--" + key);
+    return args.push(value);
+  });
+  compiler = spawn(JAVA_PATH, args);
+  stdout = '';
+  stderr = '';
+  compiler.stdout.setEncoding('utf8');
+  compiler.stderr.setEncoding('utf8');
+  compiler.stdout.on('data', function(data) {
+    return stdout += data;
+  });
+  compiler.stderr.on('data', function(data) {
+    return stderr += data;
+  });
+  compiler.on('close', function(code) {
+    var error;
+    if (code !== 0) {
+      error = new Error(stderr);
+      error.code = code;
+    } else {
+      error = null;
+    }
+    return callback(error, stdout, stderr);
+  });
+  return compiler.stdin.end(input);
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+  }
+  outputSourceMapFile = temp.openSync('ccwp-dump-', 'w+');
+  compilerOptions['create_source_map'] = outputSourceMapFile.path;
+} else {
+  input = task.asset.source();
+}
+
+gcc.<span class="apidocCodeKeywordSpan">compile</span>(input, compilerOptions, function (err, stdout, stderr) {
+  if (err) {
+    task.error(new Error(task.file + ' from Closure Compiler\n' + err.message));
+  } else {
+    if (compilerOptions['create_source_map']) {
+      var outputSourceMap = JSON.parse(fs.readFileSync(outputSourceMapFile.path));
+      fs.unlinkSync(outputSourceMapFile.path);
+      outputSourceMap.sources = [];
+...</pre></li>
+    </ul>
+
+
+
+
+
+
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.webpack-closure-compiler.utils" id="apidoc.module.webpack-closure-compiler.utils">module webpack-closure-compiler.utils</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.webpack-closure-compiler.utils.snakeToCamel" id="apidoc.element.webpack-closure-compiler.utils.snakeToCamel">
+        function <span class="apidocSignatureSpan">webpack-closure-compiler.utils.</span>snakeToCamel
+        <span class="apidocSignatureSpan">(str)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function snakeToCamel(str) {
+  return str.replace(/(\_\w)/g, function(m) {
+    return m[1].toUpperCase();
+  });
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
+</body></html>
